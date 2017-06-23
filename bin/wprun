@@ -11,7 +11,6 @@
 /* eslint-disable */
 const resolveModule = require('resolve').sync;
 const resolvePath = require('path').resolve;
-const parseOpts = require('minimist');
 const yargs = require('yargs')
 const glob = require('glob');
 const rmDir = require('rimraf').sync;
@@ -47,16 +46,17 @@ const filesArg = opts._;
 const cwd = process.cwd();
 const webpackConfig = require(resolvePath(cwd, opts.config));
 const entry = webpackConfig.entry = [];
+const requires = opts.require || [];
 
 webpackConfig.target = 'node'
 webpackConfig.externals = [nodeExternals()]
 webpackConfig.output = webpackConfig.output || {}
 
-const outputPath = webpackConfig.output.path = path.resolve(opts.output);
+const outputPath = webpackConfig.outputv.path = path.resolve(opts.output);
 
 if (opts.sourcemap) {
   webpackConfig.devtool = 'inline-cheap-module-source-map';
-  opts.require.unshift('source-map-support/register');
+  requires.unshift('source-map-support/register');
   webpackConfig.output.devtoolModuleFilenameTemplate = '[absolute-resource-path]'
 }
 
@@ -70,4 +70,4 @@ filesArg.forEach(function (arg) {
 // On any exit cleanup outputPath folder with rimraf "rm -rf <outputPath>"
 cleanup(function () { rmDir(outputPath); });
 
-compiler(webpackConfig, opts.watch, opts.require);
+compiler(webpackConfig, opts.watch, requires);

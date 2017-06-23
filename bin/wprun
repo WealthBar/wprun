@@ -52,7 +52,7 @@ webpackConfig.target = 'node'
 webpackConfig.externals = [nodeExternals()]
 webpackConfig.output = webpackConfig.output || {}
 
-const outputPath = webpackConfig.outputv.path = path.resolve(opts.output);
+const outputPath = webpackConfig.output.path = path.resolve(opts.output);
 
 if (opts.sourcemap) {
   webpackConfig.devtool = 'inline-cheap-module-source-map';

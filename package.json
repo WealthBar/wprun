@@ -1,6 +1,6 @@
 {
   "name": "wprun",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Webpack Runner - Run scripts after processing them with webpack",
   "main": "./src/compiler.js",
   "bin": "./bin/wprun",

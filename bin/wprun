@@ -1,0 +1,73 @@
+#!/usr/bin/env node
+
+// Webpack File Runner
+// ===================
+//
+// Runs any file or glob of files through Webpack and then Node.js.
+// This is useful for running test files.
+//
+// wpr -r test_helper.ts test/**/*.js
+
+/* eslint-disable */
+const resolveModule = require('resolve').sync;
+const resolvePath = require('path').resolve;
+const parseOpts = require('minimist');
+const yargs = require('yargs')
+const glob = require('glob');
+const rmDir = require('rimraf').sync;
+const cleanup = require('node-cleanup');
+const path = require('path');
+const nodeExternals = require('webpack-node-externals');
+const compiler = require('../src/compiler');
+
+var opts = yargs
+  .demand(1)
+  .coerce('r', args => args.split(',').map(f => f.trim()))
+  .alias('r', 'require')
+  .describe('r', 'File(s) or modules to require before webpack bundle. (Seperate multiple requires with a comma)')
+  .boolean('w')
+  .alias('w', 'watch')
+  .describe('w', 'Watch mode')
+  .alias('c', 'config')
+  .describe('c', 'Location of webpack config')
+  .default('c', 'webpack.config.js')
+  .help('h')
+  .alias('h', 'help')
+  .describe('o', 'Output path for webpack temp file')
+  .alias('o', 'output')
+  .default('o', '.wprun')
+  .boolean('s')
+  .describe('s', 'Enable souremaps')
+  .alias('s', 'sourcemap')
+  .default('s', true)
+  .usage('Usage: wprun [options] <files>')
+  .argv
+
+const filesArg = opts._;
+const cwd = process.cwd();
+const webpackConfig = require(resolvePath(cwd, opts.config));
+const entry = webpackConfig.entry = [];
+
+webpackConfig.target = 'node'
+webpackConfig.externals = [nodeExternals()]
+webpackConfig.output = webpackConfig.output || {}
+
+const outputPath = webpackConfig.output.path = path.resolve(opts.output);
+
+if (opts.sourcemap) {
+  webpackConfig.devtool = 'inline-cheap-module-source-map';
+  opts.require.unshift('source-map-support/register');
+  webpackConfig.output.devtoolModuleFilenameTemplate = '[absolute-resource-path]'
+}
+
+// Process remaining arguments as a file glob
+filesArg.forEach(function (arg) {
+  glob.sync(arg).forEach(function (file) {
+    entry.push(resolvePath(cwd, file));
+  });
+});
+
+// On any exit cleanup outputPath folder with rimraf "rm -rf <outputPath>"
+cleanup(function () { rmDir(outputPath); });
+
+compiler(webpackConfig, opts.watch, opts.require);

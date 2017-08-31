@@ -50,7 +50,7 @@ const requires = opts.require || [];
 
 webpackConfig.target = 'node'
 webpackConfig.externals = [nodeExternals()]
-webpackConfig.output = webpackConfig.output || {}
+webpackConfig.output = {}
 
 const outputPath = webpackConfig.output.path = path.resolve(opts.output);
 

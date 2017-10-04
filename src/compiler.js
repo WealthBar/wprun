@@ -17,7 +17,7 @@ function logErrorsAndWarnings(err, stats) {
   if (stats.hasWarnings()) info.warnings.forEach(w => console.warn(w))
 }
 
-function FileRunner(require) {
+function FileRunner(exec, require) {
   let lastHash = null;
   return function runner(err, stats) {
     logErrorsAndWarnings(err, stats);
@@ -45,13 +45,13 @@ function FileRunner(require) {
     console.warn(" ");
     console.warn("Bundle compiled, executing...");
 
-    execa('node', args, opts).catch(() => { });
+    execa(exec, args, opts).catch(() => { });
   };
 }
 
-module.exports = function compile(config, watch = false, require = []) {
+module.exports = function compile(exec, config, watch = false, require = []) {
   const compiler = webpack(config);
-  const runner = new FileRunner(require);
+  const runner = new FileRunner(exec, require);
   if (watch) {
     compiler.watch({}, runner);
   } else {

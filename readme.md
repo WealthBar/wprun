@@ -20,6 +20,7 @@ wprun **/*.test.js
 - `-w` enable webpack's watch mode and re-runs the scripts when any files change
 - `-r` require files or modules before the script(s) are run. This should be a comma separated list if more than one is required and will not be processed by webpack
 - `-s` enable sourcemap support (enabled by default pass 'false' to this if you want to disable it)
+- `-e` specific what to run, default is `node`. Use `-e mocha` to run mocha tests.
 
 ## Example Use Case
 

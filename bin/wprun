@@ -27,6 +27,9 @@ var opts = yargs
   .boolean('w')
   .alias('w', 'watch')
   .describe('w', 'Watch mode')
+  .alias('e', 'exec')
+  .describe('e', 'executable to run')
+  .default('e', 'node')
   .alias('c', 'config')
   .describe('c', 'Location of webpack config')
   .default('c', 'webpack.config.js')
@@ -70,4 +73,4 @@ filesArg.forEach(function (arg) {
 // On any exit cleanup outputPath folder with rimraf "rm -rf <outputPath>"
 cleanup(function () { rmDir(outputPath); });
 
-compiler(webpackConfig, opts.watch, requires);
+compiler(opts.exec, webpackConfig, opts.watch, requires);
